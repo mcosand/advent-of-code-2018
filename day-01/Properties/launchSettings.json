@@ -1,8 +1,7 @@
 {
   "profiles": {
     "day-01": {
-      "commandName": "Project",
-      "workingDirectory": "c:\\code\\puzzles\\advent-of-code-2018\\day-01"
+      "commandName": "Project"
     }
   }
 }
