@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -10,31 +9,14 @@ namespace day_02
     static void Main(string[] args)
     {
       string[] lines = File.ReadAllLines("input.txt");
-      int count2 = 0;
-      int count3 = 0;
-      for (int i = 0; i < lines.Length; i++)
+      for (var i=0;i<lines[0].Length; i++)
       {
-        var list = makeList();
-        for (var j = 0; j<lines[i].Length; j++)
+        var result = lines.Select(f => f.Substring(0, i) + (i < f.Length - 1 ? f.Substring(i + 1, f.Length - 1 - i) : "")).GroupBy(f => f).Where(f => f.Count() > 1).Select(f => f.Key);
+        if (result.Count() != 0)
         {
-          list[lines[i][j]]++;
+          Console.WriteLine(result.ToArray()[0]);
         }
-        if (list.Any(f => f.Value == 2)) count2++;
-        if (list.Any(f => f.Value == 3)) count3++;
-
       }
-
-      Console.WriteLine(count2 * count3);
-    }
-
-    private static Dictionary<char, int> makeList()
-    {
-      Dictionary<char, int> list = new Dictionary<char, int>();
-      for (char a = 'a'; a <= 'z'; a++)
-      {
-        list.Add(a, 0);
-      }
-      return list;
     }
   }
 }
