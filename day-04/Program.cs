@@ -43,11 +43,22 @@ namespace day_04
         }
       }
 
-      var sleepiest = guardDownTimes.OrderByDescending(f => f.Value[60]).First();
-      var enumerable = sleepiest.Value.Take(60).Select((f, i) => new { i = i, v = f });
-      var orderedEnumerable = enumerable.OrderByDescending(f => f.v);
-      int goodTime = orderedEnumerable.Select(f => f.i).First();
-      var result = int.Parse(sleepiest.Key) * goodTime;
+      string maxGuard = null;
+      int bigCount = 0;
+      var maxMinute = 0;
+      foreach (var guard in guardDownTimes)
+      {
+        for (int i=0;i<60;i++)
+        {
+          if (guard.Value[i] > bigCount) {
+            maxGuard = guard.Key;
+            bigCount = guard.Value[i];
+            maxMinute = i;
+          }
+        }
+      }
+
+      var result = int.Parse(maxGuard) * maxMinute;
       Console.WriteLine(result);
     }
 
