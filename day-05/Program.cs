@@ -15,51 +15,58 @@ namespace day_05
   {
     static void Main(string[] args)
     {
-      int count = 0;
-      int translate = 'a' - 'A';
-      Node current = null;
-      Node first = null;
-
-      string input = "dabAcCaCBAcCcaDA";
-      input = File.ReadAllText("input.txt");
-      foreach (var c in input)
+      int min = int.MaxValue;
+      for (char problem = 'A'; problem <= 'Z'; problem++)
       {
-        var newNode = new Node() { value = c, prev = current, i = count };
-        if (current != null) current.next = newNode;
-        if (first == null) first = newNode;
-        current = newNode;
-        count++;
-      }
+        int count = 0;
+        int translate = 'a' - 'A';
+        Node current = null;
+        Node first = null;
 
-      current = first;
-      while (current != null && current.next != null)
-      {
-        if (current.value + translate == current.next.value || current.value - translate == current.next.value)
+        string input = "dabAcCaCBAcCcaDA";
+        input = File.ReadAllText("input.txt");
+        foreach (var c in input)
         {
-          Console.WriteLine(current.value + "" + current.next.value + ": poof!");
-          if (current.next.next != null)
-          {
-            current.next.next.prev = current.prev;
-          }
+          if (c == problem || c == problem + translate) continue;
 
-          if (current.prev == null)
+          var newNode = new Node() { value = c, prev = current, i = count };
+          if (current != null) current.next = newNode;
+          if (first == null) first = newNode;
+          current = newNode;
+          count++;
+        }
+
+        current = first;
+        while (current != null && current.next != null)
+        {
+          if (current.value + translate == current.next.value || current.value - translate == current.next.value)
           {
-            current = first = current.next.next;
+            if (current.next.next != null)
+            {
+              current.next.next.prev = current.prev;
+            }
+
+            if (current.prev == null)
+            {
+              current = first = current.next.next;
+            }
+            else
+            {
+              current.prev.next = current.next.next;
+              current = current.prev;
+            }
+            count -= 2;
           }
           else
           {
-            current.prev.next = current.next.next;
-            current = current.prev;
+            current = current.next;
           }
-          count -= 2;
         }
-        else
-        {
-          current = current.next;
-        }
-      }
 
-      Console.WriteLine(count);
+        Console.WriteLine(problem + ": " + count);
+        min = Math.Min(count, min);
+      }
+      Console.WriteLine(min);
     }
   }
 }
