@@ -75,6 +75,8 @@ namespace day_10
         Console.SetCursorPosition(p.x - minx, p.y - miny);
         Console.Write('#');
       }
+      Console.SetCursorPosition(0, Console.WindowHeight - 2);
+      Console.Write(t);
     }
 
     static int countSingles(Point[] points)
