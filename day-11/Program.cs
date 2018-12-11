@@ -14,30 +14,35 @@ namespace day_11
 
       int[][] grid = new int[height][];
       int[][] squares = new int[height][];
-      Tuple<int, int, int> maxPower = new Tuple<int, int, int>(-100, 0, 0);
+      Tuple<int, int, int, int> maxPower = new Tuple<int, int, int, int>(-100, 0, 0, 0);
 
-      for (var y = 299; y >= 0; y--)
+      for (var s = 1; s <= 300; s++)
       {
-        grid[y] = new int[width];
-        squares[y] = new int[width];
-
-        for (var x = 299; x >= 0; x--)
+        Console.WriteLine($"{s} maxPower: {maxPower}");
+        for (var y = 299; y >= 0; y--)
         {
-          int rack = x + 10;
-          grid[y][x] = (((((rack * y) + gridSerial) * rack) / 100) % 10) - 5;
+          grid[y] = new int[width];
+          squares[y] = new int[width];
 
-          if (x < 298 && y < 298)
+          for (var x = 299; x >= 0; x--)
           {
-            for (var sx=0;sx<3;sx++)
+            int rack = x + 10;
+            grid[y][x] = (((((rack * y) + gridSerial) * rack) / 100) % 10) - 5;
+
+
+            if (x <= 300 - s && y <= 300 - s)
             {
-              for (var sy=0;sy<3;sy++)
+              for (var sx = 0; sx < s; sx++)
               {
-                squares[y][x] += grid[y + sy][x + sx];
+                for (var sy = 0; sy < s; sy++)
+                {
+                  squares[y][x] += grid[y + sy][x + sx];
+                }
               }
-            }
-            if (squares[y][x] > maxPower.Item1)
-            {
-              maxPower = new Tuple<int, int, int>(squares[y][x], x, y);
+              if (squares[y][x] > maxPower.Item1)
+              {
+                maxPower = new Tuple<int, int, int, int>(squares[y][x], x, y, s);
+              }
             }
           }
         }
