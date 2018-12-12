@@ -65,14 +65,16 @@ namespace day_12
 "###.# => #",
 "#...# => ."
       };
-
-      state = new string('.', 30) + state + new string('.', 30);
+      int generations = 2000;
+      int pad = (int)(generations * 1.5);
+      state = new string('.', (int)(pad)) + state + new string('.', (int)(pad));
 
       Dictionary<string, bool> rules = rulesInput.ToDictionary(f => f.Substring(0, 5), f => f[f.Length - 1] == '#');
+      int lastSum = 0;
 
-      for (int gen=0; gen<20;gen++)
+      for (int gen=0; gen<generations;gen++)
       {
-        Console.WriteLine(state.Substring(27, state.Length - 50));
+        //Console.WriteLine(state.Substring(27, state.Length - 50));
         StringBuilder result = new StringBuilder();
         for (int i=0; i<state.Length - 4; i++)
         {
@@ -87,14 +89,17 @@ namespace day_12
           }
         }
         state = ".." + result.ToString() + "..";
-      }
-      Console.WriteLine(state.Substring(27, state.Length - 50));
 
-      int sum = 0;
-      for (int i=0;i<state.Length;i++)
-      {
-        if (state[i] == '#') sum += i - 30;
+        int sum = 0;
+        for (int i = 0; i < state.Length; i++)
+        {
+          if (state[i] == '#') sum += i - pad;
+        }
+        Console.WriteLine($"{gen + 1} {sum} {sum - lastSum}" );
+        lastSum = sum;
       }
+
+      // Within 200 steps, sum starts incrementing by 42 each generation. Formula ends up as 50000000000 * 42 + 61
     }
   }
 }
