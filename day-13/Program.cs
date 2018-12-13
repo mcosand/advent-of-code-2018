@@ -27,6 +27,7 @@ namespace day_13
       public int y;
       public Direction dir;
       public int turn;
+      public bool crashed = false;
     }
 
     static void Main(string[] args)
@@ -73,9 +74,9 @@ namespace day_13
       }
       bool collided = false;
       int ticks = 0;
-      while (!collided)
+      while (carts.Count > 1)
       {
-        foreach (var cart in carts.OrderBy(f => f.y).ThenBy(f => f.x))
+        foreach (var cart in carts.Where(f => !f.crashed).OrderBy(f => f.y).ThenBy(f => f.x))
         {
           int nextX = cart.x;
           int nextY = cart.y;
@@ -86,7 +87,9 @@ namespace day_13
 
           if (carts.Any(f => f.x == nextX && f.y == nextY))
           {
-            Console.WriteLine($"Collision at {nextX},{nextY}");
+            //Console.WriteLine($"Collision at {nextX},{nextY}");
+            carts.Where(f => f.x == nextX && f.y == nextY).ToList().ForEach(f => f.crashed = true);
+            cart.crashed = true;
             collided = true;
           }
 
@@ -116,8 +119,10 @@ namespace day_13
           }
 
         }
+        carts = carts.Where(f => !f.crashed).ToList();
         //dump(grid, carts);
       }
+      Console.WriteLine($"Last cart at {carts[0].x},{carts[0].y}");
     }
 
     static void dump(char[][] grid, List<Cart> carts)
