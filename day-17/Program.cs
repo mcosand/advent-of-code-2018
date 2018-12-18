@@ -20,6 +20,7 @@ namespace day_17
     private int minX = int.MaxValue;
     int minY = int.MaxValue;
     int capacity = 0;
+    int atRest = 0;
     Dictionary<string, Segment> pendingSegments = new Dictionary<string, Segment>();
 
     static void Main(string[] args)
@@ -56,7 +57,8 @@ namespace day_17
         percolate(segment);
       }
 
-      Console.WriteLine("Capacity: " + capacity);
+      Console.SetCursorPosition(0, grid.GetLength(1) + 1);
+      Console.WriteLine($"Capacity: {capacity}, Contained: {atRest}");
     }
 
     private string getKey(Segment s)
@@ -136,6 +138,7 @@ namespace day_17
         grid[x + s.Left, s.Y] = STILL;
         pendingSegments.Remove($"{x + s.Left}-{s.Y}");
       }
+      atRest += s.Width;
       Console.SetCursorPosition(s.Left, s.Y);
       Console.Write(new string('~', s.Width));
       s.Contained = true;
