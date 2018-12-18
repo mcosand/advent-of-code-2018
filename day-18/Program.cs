@@ -26,7 +26,8 @@ namespace day_18
     {
       int size = 10;
       string file = "sample.txt";
-
+      Dictionary<string, int> seen = new Dictionary<string, int>();
+      
       size = 50;
       file = "input.txt";
 
@@ -41,10 +42,12 @@ namespace day_18
           area[x, y] = line[x] == '.' ? Land.Open : line[x] == '|' ? Land.Trees : Land.Yard;
         }
       }
-      print(0);
-      for (int i=0; i<10; i++)
+
+      int count = 1000000000;
+      for (int i=0; i< count; i++)
       {
         Land[,] newArea = new Land[area.GetLength(0), area.GetLength(1)];
+        StringBuilder stamp = new StringBuilder();
         for (int y = 0; y < area.GetLength(1); y++)
         {
           for (int x = 0; x < area.GetLength(0); x++)
@@ -53,13 +56,36 @@ namespace day_18
             TryMutate(x, y, Land.Open, new Dictionary<Land, int> { { Land.Trees, 3 } }, Land.Trees, Land.Open, newArea);
             TryMutate(x, y, Land.Trees, new Dictionary<Land, int> { { Land.Yard, 3 } }, Land.Yard, Land.Trees, newArea);
             TryMutate(x, y, Land.Yard, new Dictionary<Land, int> { { Land.Yard, 1 }, { Land.Trees, 1 } }, Land.Yard, Land.Open, newArea);
+            stamp.Append(newArea[x, y] == Land.Open ? '.' : newArea[x, y] == Land.Trees ? '|' : '#');
           }
         }
+
+        if (seen.TryGetValue(stamp.ToString(), out int loopStartsAt))
+        {
+          int loopLength = i - loopStartsAt;
+          int endIndex = (count - loopStartsAt) % loopLength + loopStartsAt - 1;
+          string endState = seen.Single(f => f.Value == endIndex).Key;
+
+          int answer = endState.Count(f => f == '|') * endState.Count(f => f == '#');
+
+          Console.WriteLine("answer: " + answer);
+          break;
+        }
+        else
+        {
+          seen.Add(stamp.ToString(), i);
+        }
+
         area = newArea;
 
-        print(i);
-      }
 
+     //   print(i);
+      }
+      //getEndCount();
+    }
+
+    private void getEndCount()
+    {
       int treeCount = 0;
       int woodCount = 0;
       for (int y = 0; y < area.GetLength(1); y++)
@@ -71,6 +97,7 @@ namespace day_18
         }
       }
       int answer = treeCount * woodCount;
+      Console.WriteLine(answer);
     }
 
     private void TryMutate(int x, int y, Land from, Dictionary<Land, int> test, Land onMatch, Land otherwise, Land[,] newArea)
@@ -81,6 +108,7 @@ namespace day_18
 
     private void print(int i)
     {
+      Console.SetCursorPosition(0, 0);
       Console.WriteLine(i);
       for (var y = 0; y < area.GetLength(1); y++)
       {
