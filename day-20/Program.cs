@@ -55,6 +55,7 @@ namespace day_20
       Walk(myLocation, 0);
       print();
       int farthest = rooms.SelectMany(f => f.Value.Select(g => g.Value)).Max(f => f.doors);
+      int count = rooms.SelectMany(f => f.Value.Select(g => g.Value)).Count(f => f.doors >= 1000);
     }
 
     private int Walk(Room current, int i)
