@@ -14,6 +14,7 @@ namespace day_16
 
     readonly int[] registers = new int[4];
     Dictionary<string, Action<int, int, int>> instructions;
+    Dictionary<int, string> opcodeNames = new Dictionary<int, string>();
 
     private void Run()
     {
@@ -43,38 +44,63 @@ namespace day_16
 
       int confusing = 0;
 
-      for (int i=0;i<input.Length;i++)
+      Dictionary<string, Action<int, int, int>> unknownInstructions = new Dictionary<string, Action<int, int, int>>(instructions);
+      while (unknownInstructions.Count > 0)
       {
-        lines[i % 4] = input[i];
-        if (i % 4 == 3)
+        int i = 0;
+        for ( ; i < input.Length; i++)
         {
-          if (lines[0].StartsWith("Before") == false) break;
-          int[] before = lines[0].Substring(9, lines[0].Length - 10).Split(',').Select(f => int.Parse(f)).ToArray();
-          int[] after = lines[2].Substring(9, lines[2].Length - 10).Split(',').Select(f => int.Parse(f)).ToArray();
-
-          int[] instruction = lines[1].Split(" ").Skip(1).Select(f => int.Parse(f)).ToArray();
-
-          int matchCount = instructions.Count(f =>
+          lines[i % 4] = input[i];
+          if (i % 4 == 3)
           {
-            for (int j = 0; j < 4; j++)
+            if (lines[0].StartsWith("Before") == false) break;
+            int[] before = lines[0].Substring(9, lines[0].Length - 10).Split(',').Select(f => int.Parse(f)).ToArray();
+            int[] after = lines[2].Substring(9, lines[2].Length - 10).Split(',').Select(f => int.Parse(f)).ToArray();
+
+            int[] instruction = lines[1].Split(" ").Select(f => int.Parse(f)).ToArray();
+
+            // We know this instruction
+            if (opcodeNames.ContainsKey(instruction[0])) continue;
+            
+            // We don't know this instruction. Test it.
+            var matches = unknownInstructions.Where(f =>
             {
-              registers[j] = before[j];
-            }
+              for (int j = 0; j < 4; j++)
+              {
+                registers[j] = before[j];
+              }
 
-            f.Value(instruction[0], instruction[1], instruction[2]);
+              f.Value(instruction[1], instruction[2], instruction[3]);
 
-            for (int j = 0; j < 4; j++)
+              for (int j = 0; j < 4; j++)
+              {
+                if (registers[j] != after[j]) return false;
+              }
+
+              return true;
+            }).ToList();
+
+            if (matches.Count == 1)
             {
-              if (registers[j] != after[j]) return false;
+              opcodeNames.Add(instruction[0], matches[0].Key);
+              unknownInstructions.Remove(matches[0].Key);
             }
+          }
+        }
 
-            return true;
-          });
+        // reset
+        for (int j=0;j<registers.Length;j++) { registers[j] = 0; }
 
-          confusing += (matchCount >= 3) ? 1 : 0;
+        for (i--; i < input.Length; i++)
+        {
+          var line = input[i];
+          int[] instruction = line.Split(" ").Select(f => int.Parse(f)).ToArray();
+          instructions[opcodeNames[instruction[0]]](instruction[1], instruction[2], instruction[3]);
         }
       }
 
+      var answer = registers[0];
+      Console.WriteLine(answer);
     }
   }
 }
