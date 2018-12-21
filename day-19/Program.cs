@@ -48,16 +48,37 @@ namespace day_19
         () => instructions[args[0]](int.Parse(args[1]), int.Parse(args[2]), int.Parse(args[3]))
       )).ToList();
 
+      registers[0] = 1;
       for (int instructionPointer = 0; instructionPointer < program.Count; instructionPointer++)
       {
         registers[ipBinding] = instructionPointer;
         program[instructionPointer]();
-       // Console.WriteLine($"ip={instructionPointer} [{string.Join(' ', registers)}]");
+        Console.WriteLine($"ip={instructionPointer} [{string.Join(' ', registers)}]");
         instructionPointer = registers[ipBinding];
+
+        // After figuring out what the body of the input program was...
+        if (instructionPointer == 3)
+        {
+          registers[0] = sumOfFactors(registers[5]);
+          break;
+        }
       }
 
       int answer = registers[0];
       Console.WriteLine(answer);
+    }
+
+    private int sumOfFactors(int target)
+    {
+      int sum = 0;
+      for (int i=1;i<=target;i++)
+      {
+        if (target % i == 0)
+        {
+          sum += i;
+        }
+      }
+      return sum;
     }
   }
 }
