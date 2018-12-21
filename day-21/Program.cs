@@ -48,6 +48,9 @@ namespace day_21
         () => instructions[args[0]](int.Parse(args[1]), int.Parse(args[2]), int.Parse(args[3]))
       )).ToList();
 
+      Dictionary<int, bool> hits = new Dictionary<int, bool>();
+      int lastHit = 0;
+
       registers[0] = 57;
       for (int instructionPointer = 0; instructionPointer < program.Count; instructionPointer++)
       {
@@ -57,13 +60,18 @@ namespace day_21
         // in the program.
         if (instructionPointer == 28)
         {
-          registers[0] = registers[4];
-          break;
+          if (hits.Count % 100 == 0) Console.WriteLine(hits.Count);
+          if (hits.TryGetValue(registers[4], out bool already))
+          {
+            registers[0] = lastHit;
+            break;
+          }
+          lastHit = registers[4];
+          hits.Add(lastHit, true);
         }
-        //     Console.Write($"[{string.Join(' ', registers)}] ip={instructionPointer}");
+
         registers[ipBinding] = instructionPointer;
         program[instructionPointer]();
-        //Console.WriteLine($"  [{string.Join(' ', registers)}]");
         instructionPointer = registers[ipBinding];
       }
 
